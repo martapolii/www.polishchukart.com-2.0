@@ -22,9 +22,10 @@ This is a temp private repository until I get admin, as I cannot run scripts on 
 **5. Initialize Firebase in your React App**
 - [ ] Create new folder in src directory: `firebase_setup`
 - [ ] Create a new file within that folder: `firebase.js`
-- [ ] Paste the code generated earlier into this file (firebase SDK configuration from firebase.com, below is an example of how this code looks from a test configuration:) **do this**
+- [ ] Paste the code generated earlier into this file (firebase SDK configuration from firebase.com, below is an example of how this code looks from a test configuration:) 
 
 ```javascript
+// example firebase CDK configuration:
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -48,7 +49,30 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 ```
 
-- [ ] Store the configuration object `firebaseConfig` inside .env file for now **THIS IS NOT SECURE ENOUGH**
+>It is better to store the configuration object `firebaseConfig` inside .env file. **IS THIS IS SECURE ENOUGH??**
+>- [ ] Create a `.env` file in your **client** folder and add the following, replacing the values with the Ids from the `firebaseConfig` object: 
+>```javascript
+># Firebase secret keys:
+># REACT_APP_apiKey=your_api_key
+># REACT_APP_authDomain=your_project.firebaseapp.com
+># REACT_APP_projectId=your_project_id
+># REACT_APP_storageBucket=your_project.appspot.com
+># REACT_APP_messagingSenderId=your_messaging_sender_id
+># REACT_APP_appId=your_app_id
+># REACT_APP_measurementId=your_measurement_id
+>```
+>  - [ ] in your `firebase.js` file, replace the `firebaseConfig` object values with the following code:
+>  ```javascript
+>  const firebaseConfig = {
+>  apiKey: process.env.REACT_APP_apiKey,
+>  authDomain: process.env.REACT_APP_authDomain,
+>  projectId: process.env.REACT_APP_projectId,
+>  storageBucket: process.env.REACT_APP_storageBucket,
+>  messagingSenderId: process.env.REACT_APP_messagingSenderId,
+>  appId: process.env.REACT_APP_appId,
+>  measurementId: process.env.REACT_APP_measurementId
+>};
+>```
 
 **6. Test the connection to firebase**
 Test by submitting dummy data 
@@ -56,11 +80,12 @@ Test by submitting dummy data
 - [ ] 2. create a `handlesubmit.js` file inside this folder 
 - [ ] 3. create a submit handler:
 ```javascript
-import { addDoc, collection } from "@firebase/firestore"
-import { firestore } from "../firebase_setup/firebase"
- 
+// example submit handler:
+import { addDoc, collection } from "@firebase/firestore";
+import { db } from "../firebase_setup/firebase";
+
 const handleSubmit = (testdata) => {
-    const ref = collection(firestore, "test_data") // Firebase creates this automatically
+    const ref = collection(db, "test_data") // Firebase creates this automatically
  
     let data = {
         testData: testdata
@@ -74,35 +99,36 @@ const handleSubmit = (testdata) => {
 }
  
 export default handleSubmit
+
 ```
 - [ ] 4. Add the code to import the submit handler into your react app in App.js:
-  ```javascript
-  import './App.css';
-  import handleSubmit from './handles/handlesubmit';
-  import { useRef } from 'react';
-  
-  function App() {
-      const dataRef = useRef()
+```javascript
+import './App.css';
+import handleSubmit from './handles/handlesubmit';
+import { useRef } from 'react';
 
-      const submithandler = (e) => {    
-         e.preventDefault()  
-         handleSubmit(dataRef.current.value)   
-         dataRef.current.value = ""  
-         }
-         
-         return (
-            <div className="App"     
-               <form onSubmit={submithandler}>        
-                 <input type= "text" ref={dataRef} />
-                 <button type = "submit">Save</button>
-               </form>   
-            </div>
-         );
-      }
-      
-      export default App;
-  ```
-  - [ ] 4. Run the react app `npm start` from client folder, and try submitting data via the form. Check the direbase database console for information. 
+function App() {
+    const dataRef = useRef(null);
+
+    const submithandler = (e) => {    
+        e.preventDefault();  
+        handleSubmit(dataRef.current.value);   
+        dataRef.current.value = "";  
+    };
+
+    return (
+        <div className="App">
+            <form onSubmit={submithandler}>        
+                <input type="text" ref={dataRef} />
+                <button type="submit">Save</button>
+            </form>   
+        </div>
+    );
+}
+
+export default App;
+```
+  - [ ] 4. Run the react app `npm start` from client folder, and try submitting data via the form. Check the firebase database console for evidence of a connection, under Project Overview > Authentication > Usage.
 
 ## To-do:
 - [ ] ask about secure way to store .env variables 

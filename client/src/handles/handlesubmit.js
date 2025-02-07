@@ -1,9 +1,9 @@
 // example submit handler:
-import { addDoc, collection } from "@firebase/firestore"
-import { firestore } from "../firebase_setup/firebase"
- 
+import { addDoc, collection } from "@firebase/firestore";
+import { db } from "../firebase_setup/firebase";
+
 const handleSubmit = (testdata) => {
-    const ref = collection(firestore, "test_data") // Firebase creates this automatically
+    const ref = collection(db, "test_data") // Firebase creates this automatically
  
     let data = {
         testData: testdata
